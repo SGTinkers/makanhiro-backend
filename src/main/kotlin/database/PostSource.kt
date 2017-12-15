@@ -1,11 +1,14 @@
 package database
 
+import io.ktor.util.toLocalDateTime
 import models.Dietary
 import models.FoodAvailability
 import models.Post
 import java.sql.*
 import java.sql.Date
+import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.collections.ArrayList
 
 /**
@@ -16,11 +19,12 @@ import kotlin.collections.ArrayList
 
 class PostSource {
     /**
-     * Status: Completed but not tested
+     * Status: Completed
+     * Test: Working
      */
     fun getPosts():ArrayList<Post>{
         val res = ArrayList<Post>()
-        val sql = "SELECT * FROM post WHERE expiryTime > ?"
+        val sql = "SELECT * FROM post WHERE expiryTime > ? AND foodAvailability != 'FINISHED'"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
@@ -28,22 +32,22 @@ class PostSource {
             val rs = ps.executeQuery()
 
             while(rs.next()){
-                val images = ArrayList<String>(rs.getString("images")
-                                .split(","))
-                                .map { c:String -> c.trim() }
-                                .toList()
+                val images = rs.getString("images")
+                val imageToString = if(images !=null) ArrayList<String>(images
+                        .split(","))
+                        .map { c:String -> c.trim() }
+                        .toList() else null
 
                 val tempPost = Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
-                        rs.getDate("expiryTime"),
-                        images,
+                        rs.getTimestamp("expiryTime"),
+                        imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
-                        rs.getDate("createdAt"),
-                        rs.getDate("updatedAt"),
-                        rs.getDate("deletedAt"),
+                        rs.getTimestamp("createdAt"),
+                        rs.getTimestamp("updatedAt"),
                         rs.getString("posterId"))
 
                 res.add(tempPost)
@@ -79,14 +83,13 @@ class PostSource {
                 return Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
-                        rs.getDate("expiryTime"),
+                        rs.getTimestamp("expiryTime"),
                         images,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
-                        rs.getDate("createdAt"),
-                        rs.getDate("updatedAt"),
-                        rs.getDate("deletedAt"),
+                        rs.getTimestamp("createdAt"),
+                        rs.getTimestamp("updatedAt"),
                         rs.getString("posterId"))
             }
         }catch (e:DbConnectionError){
@@ -115,14 +118,13 @@ class PostSource {
                 val temp = Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
-                        rs.getDate("expiryTime"),
+                        rs.getTimestamp("expiryTime"),
                         images,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
-                        rs.getDate("createdAt"),
-                        rs.getDate("updatedAt"),
-                        rs.getDate("deletedAt"),
+                        rs.getTimestamp("createdAt"),
+                        rs.getTimestamp("updatedAt"),
                         rs.getString("posterId"))
 
                 res.add(temp)
@@ -153,14 +155,13 @@ class PostSource {
                 val temp = Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
-                        rs.getDate("expiryTime"),
+                        rs.getTimestamp("expiryTime"),
                         images,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
-                        rs.getDate("createdAt"),
-                        rs.getDate("updatedAt"),
-                        rs.getDate("deletedAt"),
+                        rs.getTimestamp("createdAt"),
+                        rs.getTimestamp("updatedAt"),
                         rs.getString("posterId"))
 
                 res.add(temp)
@@ -179,21 +180,20 @@ class PostSource {
     //End of GET//
     //////////////
     fun createPost(post:Post):Boolean {
-        val sql = "INSERT INTO post VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+        val sql = "INSERT INTO post VALUES (?,?,?,?,?,?,?,?,?,?)"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
             ps.setString(1,post.postId)
             ps.setInt(2,post.locationId)
-            ps.setDate(3,post.expiryTime)
+            ps.setTimestamp(3,post.expiryTime)
             ps.setString(4,post.images?.joinToString(","))
             ps.setString(5,post.dietary.toString())
             ps.setString(6,post.description)
             ps.setString(7,post.foodAvailability.toString())
-            ps.setDate(8,Date.valueOf(LocalDate.now()))
-            ps.setDate(9,Date.valueOf(LocalDate.now()))
-            ps.setDate(10,post.deletedAt)
-            ps.setString(11,post.posterId)
+            ps.setTimestamp(8,post.createdAt)
+            ps.setTimestamp(9,post.updatedAt)
+            ps.setString(10,post.posterId)
             val rs = ps.executeUpdate()
 
             if (rs == 0) return false

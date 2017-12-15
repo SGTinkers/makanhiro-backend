@@ -1,6 +1,6 @@
 package models
 
-import java.sql.Date
+import java.sql.Timestamp
 
 /**
  * Post Object
@@ -8,14 +8,13 @@ import java.sql.Date
  */
 data class Post(val postId: String,
                 val locationId:Int,
-                val expiryTime: Date,
+                val expiryTime: Timestamp,
                 val images: List<String>?,
                 val dietary: Dietary,
                 val description: String,
                 val foodAvailability:FoodAvailability,
-                val createdAt: Date,
-                val updatedAt: Date,
-                val deletedAt: Date?,
+                val createdAt: Timestamp,
+                val updatedAt: Timestamp,
                 val posterId: String)
 
 
