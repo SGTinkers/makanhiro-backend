@@ -63,7 +63,8 @@ class PostSource {
         return res
     }
     /**
-     * Status: Completed but not tested
+     * Status: Completed
+     * Test: Working
      */
     fun getPostById(id:String):Post?{
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND id = ?"
@@ -76,15 +77,17 @@ class PostSource {
 
             // For this one there is only expected result so dont need to iterate the resultset
             if (rs.next()){
-                val images = ArrayList<String>(rs.getString("images")
-                                .split(","))
-                                .map { c:String -> c.trim() }
-                                .toList()
+                val images = rs.getString("images")
+                val imageToString = if(images !=null) ArrayList<String>(images
+                        .split(","))
+                        .map { c:String -> c.trim() }
+                        .toList() else null
+
                 return Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
                         rs.getTimestamp("expiryTime"),
-                        images,
+                        imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
@@ -99,8 +102,12 @@ class PostSource {
         }
         return null
     }
+    /**
+     * Status: Completed
+     * Test: Working
+     */
     fun getPostsByLocationId(locationId:Int):ArrayList<Post>{
-        val sql = "SELECT * FROM post WHERE expiryTime > ? AND locationId = ?"
+        val sql = "SELECT * FROM post WHERE expiryTime > ? AND locationId = ? AND foodAvailability != 'FINISHED'"
         val res = ArrayList<Post>()
         try {
             val conn = getDbConnection()
@@ -110,16 +117,17 @@ class PostSource {
             val rs = ps.executeQuery()
 
             while (rs.next()){
-                val images = ArrayList<String>(rs.getString("images")
+                val images = rs.getString("images")
+                val imageToString = if(images !=null) ArrayList<String>(images
                         .split(","))
                         .map { c:String -> c.trim() }
-                        .toList()
+                        .toList() else null
 
                 val temp = Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
                         rs.getTimestamp("expiryTime"),
-                        images,
+                        imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
@@ -136,27 +144,32 @@ class PostSource {
         }
         return res
     }
-    fun getPostsByUserId(userId:Int):ArrayList<Post>{
-        val sql = "SELECT * FROM post WHERE expiryTime > ? AND posterId = ?"
+    /**
+     * Status: Completed
+     * Test: Working
+     */
+    fun getPostsByUserId(userId:String):ArrayList<Post>{
+        val sql = "SELECT * FROM post WHERE expiryTime > ? AND posterId = ? AND foodAvailability != 'FINISHED'"
         val res = ArrayList<Post>()
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
             ps.setDate(1,Date.valueOf(LocalDate.now()))
-            ps.setInt(2,userId)
+            ps.setString(2,userId)
             val rs = ps.executeQuery()
 
             while (rs.next()){
-                val images = ArrayList<String>(rs.getString("images")
+                val images = rs.getString("images")
+                val imageToString = if(images !=null) ArrayList<String>(images
                         .split(","))
                         .map { c:String -> c.trim() }
-                        .toList()
+                        .toList() else null
 
                 val temp = Post(
                         rs.getString("id"),
                         rs.getInt("locationId"),
                         rs.getTimestamp("expiryTime"),
-                        images,
+                        imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
                         rs.getString("description"),
                         FoodAvailability.valueOf(rs.getString("foodAvailability")),
@@ -173,7 +186,7 @@ class PostSource {
         }
         return res
     }
-    fun getUserSubscribedPost(userId: Int):ArrayList<Post>{
+    fun getUserSubscribedPost(userId: String):ArrayList<Post>{
         TODO("Musa send help for this I not sure for the DB operations")
     }
     ///////////////

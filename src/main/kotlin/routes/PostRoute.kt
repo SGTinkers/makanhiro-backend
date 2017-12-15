@@ -41,7 +41,20 @@ fun Route.post(path: String) = route("$path/post"){
         }
     }
 
-    get("/user/{userId}"){ TODO() }
+    get("/user/{userId}"){
+        val userId = call.parameters["userId"]
+        when(userId){
+            null -> call.respondText("userId wasn't supplied")
+            else -> {
+                val res= PostSource().getPostsByUserId(userId)
+                when(res.isEmpty()){
+                    true -> call.respondText("No post with userId: $userId found!", ContentType.Text.JavaScript)
+                    else -> call.respond(res)
+                }
+            }
+        }
+
+    }
     get("/subedPost/{userId}") { TODO() }
 
     post { TODO() }
