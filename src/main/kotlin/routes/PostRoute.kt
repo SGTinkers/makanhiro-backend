@@ -54,15 +54,8 @@ fun Route.post(path: String) = route("$path/post"){
         }
 
     }
-    get("/subedPost/{userId}") { TODO() }
 
     post { TODO() }
-    post("/subPost/{postId}") { TODO() }
-    post("/subLocation/{locationId}") { TODO() }
-
     put { TODO() }
-    put("/subPost/{postId}") { TODO() }
-    put("/subLocation/{locationId}") { TODO() }
-
     delete { TODO() }
 }
