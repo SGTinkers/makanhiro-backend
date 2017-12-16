@@ -21,9 +21,18 @@ For sql file please download from the discord #backend server
  - [ ] auth
  - [ ] notifications
     
+## Technical Specs
+**Database**: MySQL
+
+**Language**: Kotlin/Java. Feel free to use Java if you are more comfortable with Java.
+
+**Web Framework**: [ktor.io](http://ktor.io/index.html)
+
+**Auth** : Facebook login
 
 ## Initial Setup
 **Recommended IDE** : IntelliJ
+
 ![setup](https://www.jetbrains.com/help/idea/gradle.html) Check this webpage to setup project for IntelliJ
 
  Any further queries please contact [BudiNverse](https://github.com/BudiNverse)
