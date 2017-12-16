@@ -15,20 +15,20 @@ import kotlin.collections.ArrayList
 class PostSource {
 
 
-    fun getPosts():ArrayList<Post>{
+    fun getPosts(): ArrayList<Post> {
         val res = ArrayList<Post>()
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND foodAvailability != 'FINISHED'"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setDate(1,Date.valueOf(LocalDate.now()))
+            ps.setDate(1, Date.valueOf(LocalDate.now()))
             val rs = ps.executeQuery()
 
-            while(rs.next()){
+            while (rs.next()) {
                 val images = rs.getString("images")
-                val imageToString = if(images !=null) ArrayList<String>(images
+                val imageToString = if (images != null) ArrayList<String>(images
                         .split(","))
-                        .map { c:String -> c.trim() }
+                        .map { c: String -> c.trim() }
                         .toList() else null
                 val location = LocationSource()
                         .getLocationSourceById(rs.getInt("locationId"))
@@ -47,37 +47,41 @@ class PostSource {
                 res.add(tempPost)
             }
 
+            rs.close()
+            ps.close()
+            conn.close()
+
             return res
-        }catch (e:DbConnectionError){
+        } catch (e: DbConnectionError) {
+            e.printStackTrace()
+        } catch (e: SQLException) {
             e.printStackTrace()
         }
-        catch (e:SQLException){
-            e.printStackTrace()
-        }
+
         return res
     }
 
-    fun getPostById(id:String):Post?{
+    fun getPostById(id: String): Post? {
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND id = ?"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setDate(1,Date.valueOf(LocalDate.now()))
+            ps.setDate(1, Date.valueOf(LocalDate.now()))
             ps.setString(2, id)
             val rs = ps.executeQuery()
 
             // For this one there is only expected result so dont need to iterate the resultset
-            if (rs.next()){
+            if (rs.next()) {
                 val images = rs.getString("images")
-                val imageToString = if(images !=null) ArrayList<String>(images
+                val imageToString = if (images != null) ArrayList<String>(images
                         .split(","))
-                        .map { c:String -> c.trim() }
+                        .map { c: String -> c.trim() }
                         .toList() else null
 
                 val location = LocationSource()
                         .getLocationSourceById(rs.getInt("locationId"))
 
-                return Post(
+                val post = Post(
                         rs.getString("id"),
                         location,
                         rs.getTimestamp("expiryTime"),
@@ -88,30 +92,37 @@ class PostSource {
                         rs.getTimestamp("createdAt"),
                         rs.getTimestamp("updatedAt"),
                         rs.getString("posterId"))
+
+
+                rs.close()
+                ps.close()
+                conn.close()
+
+                return post
             }
-        }catch (e:DbConnectionError){
+        } catch (e: DbConnectionError) {
             e.printStackTrace()
-        }catch (e:SQLException){
+        } catch (e: SQLException) {
             e.printStackTrace()
         }
         return null
     }
 
-    fun getPostsByLocationId(locationId:Int):ArrayList<Post>{
+    fun getPostsByLocationId(locationId: Int): ArrayList<Post> {
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND locationId = ? AND foodAvailability != 'FINISHED'"
         val res = ArrayList<Post>()
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setDate(1,Date.valueOf(LocalDate.now()))
-            ps.setInt(2,locationId)
+            ps.setDate(1, Date.valueOf(LocalDate.now()))
+            ps.setInt(2, locationId)
             val rs = ps.executeQuery()
 
-            while (rs.next()){
+            while (rs.next()) {
                 val images = rs.getString("images")
-                val imageToString = if(images !=null) ArrayList<String>(images
+                val imageToString = if (images != null) ArrayList<String>(images
                         .split(","))
-                        .map { c:String -> c.trim() }
+                        .map { c: String -> c.trim() }
                         .toList() else null
 
                 val location = LocationSource()
@@ -131,29 +142,33 @@ class PostSource {
 
                 res.add(temp)
             }
-        }catch (e:DbConnectionError){
+
+            rs.close()
+            ps.close()
+            conn.close()
+        } catch (e: DbConnectionError) {
             e.printStackTrace()
-        }catch (e:SQLException){
+        } catch (e: SQLException) {
             e.printStackTrace()
         }
         return res
     }
 
-    fun getPostsByUserId(userId:String):ArrayList<Post>{
+    fun getPostsByUserId(userId: String): ArrayList<Post> {
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND posterId = ? AND foodAvailability != 'FINISHED'"
         val res = ArrayList<Post>()
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setDate(1,Date.valueOf(LocalDate.now()))
-            ps.setString(2,userId)
+            ps.setDate(1, Date.valueOf(LocalDate.now()))
+            ps.setString(2, userId)
             val rs = ps.executeQuery()
 
-            while (rs.next()){
+            while (rs.next()) {
                 val images = rs.getString("images")
-                val imageToString = if(images !=null) ArrayList<String>(images
+                val imageToString = if (images != null) ArrayList<String>(images
                         .split(","))
-                        .map { c:String -> c.trim() }
+                        .map { c: String -> c.trim() }
                         .toList() else null
 
                 val location = LocationSource()
@@ -173,9 +188,12 @@ class PostSource {
 
                 res.add(temp)
             }
-        }catch (e:DbConnectionError){
+            rs.close()
+            ps.close()
+            conn.close()
+        } catch (e: DbConnectionError) {
             e.printStackTrace()
-        }catch (e:SQLException){
+        } catch (e: SQLException) {
             e.printStackTrace()
         }
         return res
@@ -183,35 +201,35 @@ class PostSource {
 
     @NotCompleted
     @NotTested
-    fun getUserSubscribedPost(userId: String):ArrayList<Post>{
+    fun getUserSubscribedPost(userId: String): ArrayList<Post> {
         TODO("Musa send help for this I not sure for the DB operations")
     }
 
     @NotCompleted
     @NotTested
-    fun createPost(post:Post):Boolean {
+    fun createPost(post: Post): Boolean {
         val sql = "INSERT INTO post VALUES (?,?,?,?,?,?,?,?,?,?)"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setString(1,post.postId)
+            ps.setString(1, post.postId)
             post.location?.locationId?.let { ps.setInt(2, it) }
-            ps.setTimestamp(3,post.expiryTime)
-            ps.setString(4,post.images?.joinToString(","))
-            ps.setString(5,post.dietary.toString())
-            ps.setString(6,post.description)
-            ps.setString(7,post.foodAvailability.toString())
-            ps.setTimestamp(8,post.createdAt)
-            ps.setTimestamp(9,post.updatedAt)
-            ps.setString(10,post.posterId)
+            ps.setTimestamp(3, post.expiryTime)
+            ps.setString(4, post.images?.joinToString(","))
+            ps.setString(5, post.dietary.toString())
+            ps.setString(6, post.description)
+            ps.setString(7, post.foodAvailability.toString())
+            ps.setTimestamp(8, post.createdAt)
+            ps.setTimestamp(9, post.updatedAt)
+            ps.setString(10, post.posterId)
             val rs = ps.executeUpdate()
 
             if (rs == 0) return false
 
             return true
-        }catch (e:DbConnectionError){
+        } catch (e: DbConnectionError) {
             e.printStackTrace()
-        }catch (e:SQLException){
+        } catch (e: SQLException) {
             e.printStackTrace()
         }
         return false
@@ -219,37 +237,37 @@ class PostSource {
 
     @NotCompleted
     @NotTested
-    fun editPost(post:Post):Boolean {
+    fun editPost(post: Post): Boolean {
         TODO()
     }
 
     @NotCompleted
     @NotTested
-    fun deletePost(postId:String):Boolean {
+    fun deletePost(postId: String): Boolean {
         TODO()
     }
 
     @NotCompleted
     @NotTested
-    fun subToPost(userId:String,postId:String):Boolean {
+    fun subToPost(userId: String, postId: String): Boolean {
         TODO()
     }
 
     @NotCompleted
     @NotTested
-    fun unsubFromPost(userId:String,postId:String):Boolean {
+    fun unsubFromPost(userId: String, postId: String): Boolean {
         TODO()
     }
 
     @NotCompleted
     @NotTested
-    fun subToLocation(userId: String,locationId: Int):Boolean {
+    fun subToLocation(userId: String, locationId: Int): Boolean {
         TODO()
     }
 
     @NotCompleted
     @NotTested
-    fun unsubFromLocation(userId: String,locationId: Int):Boolean {
+    fun unsubFromLocation(userId: String, locationId: Int): Boolean {
         TODO()
     }
 }

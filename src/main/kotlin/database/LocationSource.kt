@@ -13,11 +13,15 @@ class LocationSource {
             ps.setInt(1,id)
             val rs = ps.executeQuery()
             if(rs.next()){
-                return Location(
+                val location = Location(
                         rs.getInt("locationId"),
                         LocationName.valueOf(rs.getString("locationName")),
-                        rs.getString("locationDetails")
-                )
+                        rs.getString("locationDetails"))
+
+                rs.close()
+                ps.close()
+                conn.close()
+                return location
             }
 
         }catch (e:DbConnectionError){
