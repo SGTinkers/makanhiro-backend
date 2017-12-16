@@ -2,14 +2,14 @@ package routes
 
 import database.PostSource
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.*
+import models.NotCompleted
+import models.NotTested
 
-
-
+@NotCompleted
+@NotTested
 fun Route.post(path: String) = route("$path/post"){
     get { call.respond(PostSource().getPosts()) }
 
@@ -59,3 +59,6 @@ fun Route.post(path: String) = route("$path/post"){
     put { TODO() }
     delete { TODO() }
 }
+
+
+
