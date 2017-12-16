@@ -26,8 +26,8 @@ fun startServer() = embeddedServer(Netty, 8080) {
             call.response.status(HttpStatusCode.Forbidden)
             call.respond(ErrorMsg("Forbidden",1))
         }
-        status(HttpStatusCode.NotFound){
-            call.response.status(HttpStatusCode.NotFound)
+        status(HttpStatusCode.NoContent){
+            call.response.status(HttpStatusCode.NoContent)
             call.respond(ErrorMsg("Resource not found",2))
         }
     }

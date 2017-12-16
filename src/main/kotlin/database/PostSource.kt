@@ -1,8 +1,6 @@
 package database
 
-import models.Dietary
-import models.FoodAvailability
-import models.Post
+import models.*
 import java.sql.*
 import java.sql.Date
 import java.time.LocalDate
@@ -15,10 +13,8 @@ import kotlin.collections.ArrayList
  */
 
 class PostSource {
-    /**
-     * Status: Completed
-     * Test: Working
-     */
+
+
     fun getPosts():ArrayList<Post>{
         val res = ArrayList<Post>()
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND foodAvailability != 'FINISHED'"
@@ -34,10 +30,11 @@ class PostSource {
                         .split(","))
                         .map { c:String -> c.trim() }
                         .toList() else null
-
+                val location = LocationSource()
+                        .getLocationSourceById(rs.getInt("locationId"))
                 val tempPost = Post(
                         rs.getString("id"),
-                        rs.getInt("locationId"),
+                        location,
                         rs.getTimestamp("expiryTime"),
                         imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
@@ -59,10 +56,7 @@ class PostSource {
         }
         return res
     }
-    /**
-     * Status: Completed
-     * Test: Working
-     */
+
     fun getPostById(id:String):Post?{
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND id = ?"
         try {
@@ -80,9 +74,12 @@ class PostSource {
                         .map { c:String -> c.trim() }
                         .toList() else null
 
+                val location = LocationSource()
+                        .getLocationSourceById(rs.getInt("locationId"))
+
                 return Post(
                         rs.getString("id"),
-                        rs.getInt("locationId"),
+                        location,
                         rs.getTimestamp("expiryTime"),
                         imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
@@ -99,10 +96,7 @@ class PostSource {
         }
         return null
     }
-    /**
-     * Status: Completed
-     * Test: Working
-     */
+
     fun getPostsByLocationId(locationId:Int):ArrayList<Post>{
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND locationId = ? AND foodAvailability != 'FINISHED'"
         val res = ArrayList<Post>()
@@ -120,9 +114,12 @@ class PostSource {
                         .map { c:String -> c.trim() }
                         .toList() else null
 
+                val location = LocationSource()
+                        .getLocationSourceById(rs.getInt("locationId"))
+
                 val temp = Post(
                         rs.getString("id"),
-                        rs.getInt("locationId"),
+                        location,
                         rs.getTimestamp("expiryTime"),
                         imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
@@ -141,10 +138,7 @@ class PostSource {
         }
         return res
     }
-    /**
-     * Status: Completed
-     * Test: Working
-     */
+
     fun getPostsByUserId(userId:String):ArrayList<Post>{
         val sql = "SELECT * FROM post WHERE expiryTime > ? AND posterId = ? AND foodAvailability != 'FINISHED'"
         val res = ArrayList<Post>()
@@ -162,9 +156,12 @@ class PostSource {
                         .map { c:String -> c.trim() }
                         .toList() else null
 
+                val location = LocationSource()
+                        .getLocationSourceById(rs.getInt("locationId"))
+
                 val temp = Post(
                         rs.getString("id"),
-                        rs.getInt("locationId"),
+                        location,
                         rs.getTimestamp("expiryTime"),
                         imageToString,
                         Dietary.valueOf(rs.getString("dietary")),
@@ -183,19 +180,22 @@ class PostSource {
         }
         return res
     }
+
+    @NotCompleted
+    @NotTested
     fun getUserSubscribedPost(userId: String):ArrayList<Post>{
         TODO("Musa send help for this I not sure for the DB operations")
     }
-    ///////////////
-    //End of GET//
-    //////////////
+
+    @NotCompleted
+    @NotTested
     fun createPost(post:Post):Boolean {
         val sql = "INSERT INTO post VALUES (?,?,?,?,?,?,?,?,?,?)"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
             ps.setString(1,post.postId)
-            ps.setInt(2,post.locationId)
+            post.location?.locationId?.let { ps.setInt(2, it) }
             ps.setTimestamp(3,post.expiryTime)
             ps.setString(4,post.images?.joinToString(","))
             ps.setString(5,post.dietary.toString())
@@ -216,21 +216,39 @@ class PostSource {
         }
         return false
     }
+
+    @NotCompleted
+    @NotTested
     fun editPost(post:Post):Boolean {
         TODO()
     }
+
+    @NotCompleted
+    @NotTested
     fun deletePost(postId:String):Boolean {
         TODO()
     }
+
+    @NotCompleted
+    @NotTested
     fun subToPost(userId:String,postId:String):Boolean {
         TODO()
     }
+
+    @NotCompleted
+    @NotTested
     fun unsubFromPost(userId:String,postId:String):Boolean {
         TODO()
     }
+
+    @NotCompleted
+    @NotTested
     fun subToLocation(userId: String,locationId: Int):Boolean {
         TODO()
     }
+
+    @NotCompleted
+    @NotTested
     fun unsubFromLocation(userId: String,locationId: Int):Boolean {
         TODO()
     }

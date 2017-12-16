@@ -16,9 +16,9 @@ fun Route.post(path: String) = route("$path/post"){
     get("/{postId}") {
         val id = call.parameters["postId"]
         when(id) {
-            null -> call.respond(HttpStatusCode.NotFound)
+            null -> call.respond(HttpStatusCode.NoContent)
             else -> when(PostSource().getPostById(id)) {
-                null -> call.respond(HttpStatusCode.NotFound)
+                null -> call.respond(HttpStatusCode.NoContent)
                 else -> PostSource().getPostById(id)?.let { it1 -> call.respond(it1) }
             }
         }
@@ -33,7 +33,7 @@ fun Route.post(path: String) = route("$path/post"){
             else -> {
                 val res= PostSource().getPostsByLocationId(id)
                 when(res.isEmpty()) {
-                    true -> call.respond(HttpStatusCode.NotFound)
+                    true -> call.respond(HttpStatusCode.NoContent)
                     else -> res.let { it1 -> call.respond(it1) }
                 }
             }
@@ -47,7 +47,7 @@ fun Route.post(path: String) = route("$path/post"){
             else -> {
                 val res= PostSource().getPostsByUserId(userId)
                 when(res.isEmpty()){
-                    true -> call.respond(HttpStatusCode.NotFound)
+                    true -> call.respond(HttpStatusCode.NoContent)
                     else -> call.respond(res)
                 }
             }

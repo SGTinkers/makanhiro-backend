@@ -7,7 +7,7 @@ import java.sql.Timestamp
  * Please note that images are optional
  */
 data class Post(val postId: String,
-                val locationId:Int,
+                val location:Location?,
                 val expiryTime: Timestamp,
                 val images: List<String>?,
                 val dietary: Dietary,
