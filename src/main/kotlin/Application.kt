@@ -11,12 +11,14 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import models.ErrorMsg
 import routes.*
+import routes.authentication.auth
 
 fun main(args: Array<String>) {
   startServer()
 }
 
 fun startServer() = embeddedServer(Netty, 8080) {
+
     install(StatusPages){
         status(HttpStatusCode.BadRequest) {
             call.response.status(HttpStatusCode.BadRequest)
@@ -38,6 +40,9 @@ fun startServer() = embeddedServer(Netty, 8080) {
     val path = "/api/v1"
     routing {
         post(path)
+        postSub(path)
+        locationSub(path)
+        auth(path)
     }
 }.start(wait = true)
 

@@ -33,7 +33,7 @@ For sql file please download from the discord #backend server
 ## Initial Setup
 **Recommended IDE** : IntelliJ
 
-![setup](https://www.jetbrains.com/help/idea/gradle.html) Check this webpage to setup project for IntelliJ
+[setup](https://www.jetbrains.com/help/idea/gradle.html) Check this webpage to setup project for IntelliJ
 
  Any further queries please contact [BudiNverse](https://github.com/BudiNverse)
 
