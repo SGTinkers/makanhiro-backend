@@ -12,6 +12,6 @@ class HashUtil {
     private fun hashString(hashAlgo:String,input:String) =
             MessageDigest.getInstance(hashAlgo)
             .digest(input.toByteArray())
-            .map { String.format("%02X",it) }
+            .map { String.format("%02X",it).toLowerCase() }
             .joinToString(separator = "")
 }

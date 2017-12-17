@@ -18,22 +18,40 @@ class PostSource {
     fun getPosts(query:PostQuery): ArrayList<Post> {
         val res = ArrayList<Post>()
         val sql =
-                "SELECT * FROM post WHERE expiryTime > ? AND foodAvailability != 'FINISHED' " +
-                        "AND id = ?" +
-                        "AND locationId = ?"+
-                        "AND posterId = ? "+
+                "SELECT * FROM post " +
+                        "WHERE expiryTime > ? " +
+                        "AND foodAvailability != 'FINISHED' " +
+                        "AND (? IS NULL or id = ?) " +
+                        "AND (? IS NULL or locationId = ?) " +
+                        "AND (? IS NULL or posterId = ?) " +
                         "ORDER BY createdAt LIMIT ?"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setDate(1, Date.valueOf(LocalDate.now()))
-            ps.setString(2,query.postId)
-            when(query.locationId){
-                null -> ps.setNull(3, java.sql.Types.INTEGER)
-                else -> ps.setInt(3,query.locationId)
+            ps.setTimestamp(1, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()))
+            when(query.postId){
+                null -> {
+                    ps.setNull(2, java.sql.Types.NULL)
+                    ps.setNull(3, java.sql.Types.NULL)
+                }
+                else -> {
+                    ps.setString(2,query.postId)
+                    ps.setString(3,query.postId)
+                }
             }
-            ps.setString(4,query.userId)
-            ps.setInt(5,query.limit)
+            when(query.locationId){
+                null -> {
+                    ps.setNull(4, java.sql.Types.NULL)
+                    ps.setNull(5, java.sql.Types.NULL)
+                }
+                else -> {
+                    ps.setInt(4,query.locationId)
+                    ps.setInt(5,query.locationId)
+                }
+            }
+            ps.setString(6,query.userId)
+            ps.setString(7,query.userId)
+            ps.setInt(8,query.limit)
             val rs = ps.executeQuery()
 
             while (rs.next()) {
