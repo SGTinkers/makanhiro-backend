@@ -24,8 +24,6 @@ class LocationSource {
                 return location
             }
 
-        }catch (e:DbConnectionError){
-            e.printStackTrace()
         }catch (e:SQLException){
             e.printStackTrace()
         }

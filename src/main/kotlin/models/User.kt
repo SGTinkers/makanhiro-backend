@@ -12,7 +12,7 @@ data class User(val userId: String,
 }
 
 /**
- * name of vals must match the given Facebook resoponse
+ * name of vals must match the given Facebook response
  * so that we can convert string to Object using Gson without additional
  * hacks or workarounds
  * @param id facebookId

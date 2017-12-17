@@ -15,10 +15,5 @@ fun getDbConnection():Connection {
         e.printStackTrace()
     }
 
-    return DriverManager.getConnection(dbUrl,user,password)?:
-            throw DbConnectionError("There is an error connecting to the database.Please " +
-                    "check config / whether your instance of database is running ☺")
+    return DriverManager.getConnection(dbUrl,user,password)
 }
-
-class DbConnectionError(var msg: String): Exception()
-class DbEntryNotFound(var msg: String) : Exception()
