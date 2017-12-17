@@ -11,6 +11,8 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
+import models.Buggy
+import models.NotTested
 import models.TempFacebookUser
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -32,6 +34,8 @@ fun Route.auth(path:String) = route("$path/auth"){
     }
 }
 
+@NotTested
+@Buggy
 fun validateWithFacebook(accessToken:String): String? {
     return try {
         val url = "https://graph.facebook.com/me?" +
