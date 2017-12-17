@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import database.AuthSource
 import io.ktor.application.call
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Route
@@ -21,14 +22,17 @@ import java.security.MessageDigest
 
 
 fun Route.auth(path:String) = route("$path/auth"){
-    get("/login/{facebookId}"){
-        val test = call.parameters["facebookId"]?.let { it1 -> validateWithFacebook(it1) }
-        test?.let { it1 -> call.respond(it1) }
+    get("/login/{fbAcToken}"){
+        val fbAcToken = call.parameters["fbAcToken"]
+        val jwt = fbAcToken?.let { it1 -> validateWithFacebook(it1) }
+        when(jwt){
+            null -> call.respond(HttpStatusCode.Unauthorized)
+            else -> call.respond(JwtObjForFrontEnd(jwt,JwtConfig.getExpiration()))
+        }
     }
-
 }
 
-fun validateWithFacebook(accessToken:String): TempFacebookUser? {
+fun validateWithFacebook(accessToken:String): String? {
     return try {
         val url = "https://graph.facebook.com/me?" +
                 "fields=id,name,email&access_token=$accessToken"
@@ -38,15 +42,22 @@ fun validateWithFacebook(accessToken:String): TempFacebookUser? {
         val line = rd.readLine()
 
         val tempUser = Gson().fromJson(line,TempFacebookUser::class.java)
-
         rd.close()
-        tempUser
+        val hasRegistered = AuthSource().isUserExistInDb(tempUser.id)
+        return if(!hasRegistered)
+            when(register(tempUser)){
+                0 -> null
+                else -> AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)
+            }
+        else
+            AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)
+
     }catch (e:IOException){
         null
     }
 }
 
-fun register(tempFacebookUser: TempFacebookUser):Boolean{
+fun register(tempFacebookUser: TempFacebookUser):Int{
     val toBeHashed = tempFacebookUser.name +
             tempFacebookUser.email +
             tempFacebookUser.id

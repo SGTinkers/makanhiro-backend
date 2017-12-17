@@ -13,15 +13,18 @@ object JwtConfig {
             .setSigningKey(secret)
             .parseClaimsJwt(token)
             .body
-            .let { it["facebookId"].toString() }
+            .let({ it -> it["facebookId"].toString() })
 
     fun makeToken(user: User): String = Jwts.builder()
+            .setId(user.userId)
             .setSubject("Authentication")
             .setIssuer(issuer)
-            .claim("id", user.facebookId)
             .claim("email", user.email)
             .signWith(SignatureAlgorithm.HS256, secret)
             .compact()
 
-    private fun getExpiration() = Date(System.currentTimeMillis() + validityInMs)
+    fun getExpiration() = Date(System.currentTimeMillis() + validityInMs)
 }
+
+data class JwtObjForFrontEnd(val token:String,
+                             val expiry:Date)
