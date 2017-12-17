@@ -15,13 +15,25 @@ import kotlin.collections.ArrayList
 class PostSource {
 
 
-    fun getPosts(): ArrayList<Post> {
+    fun getPosts(query:PostQuery): ArrayList<Post> {
         val res = ArrayList<Post>()
-        val sql = "SELECT * FROM post WHERE expiryTime > ? AND foodAvailability != 'FINISHED'"
+        val sql =
+                "SELECT * FROM post WHERE expiryTime > ? AND foodAvailability != 'FINISHED' " +
+                        "AND id = ?" +
+                        "AND locationId = ?"+
+                        "AND posterId = ? "+
+                        "ORDER BY createdAt LIMIT ?"
         try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
             ps.setDate(1, Date.valueOf(LocalDate.now()))
+            ps.setString(2,query.postId)
+            when(query.locationId){
+                null -> ps.setNull(3, java.sql.Types.INTEGER)
+                else -> ps.setInt(3,query.locationId)
+            }
+            ps.setString(4,query.userId)
+            ps.setInt(5,query.limit)
             val rs = ps.executeQuery()
 
             while (rs.next()) {

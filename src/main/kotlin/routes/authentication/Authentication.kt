@@ -3,6 +3,7 @@ package routes.authentication
 
 import com.google.gson.Gson
 import database.AuthSource
+import database.HashUtil
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -23,20 +24,20 @@ import java.io.IOException
 import java.security.MessageDigest
 
 
-fun Route.auth(path:String) = route("$path/auth"){
-    get("/login/{fbAcToken}"){
+fun Route.auth(path: String) = route("$path/auth") {
+    get("/login/{fbAcToken}") {
         val fbAcToken = call.parameters["fbAcToken"]
         val jwt = fbAcToken?.let { it1 -> validateWithFacebook(it1) }
-        when(jwt){
+        when (jwt) {
             null -> call.respond(HttpStatusCode.Unauthorized)
-            else -> call.respond(JwtObjForFrontEnd(jwt,JwtConfig.getExpiration()))
+            else -> call.respond(JwtObjForFrontEnd(jwt, JwtConfig.getExpiration()))
         }
     }
 }
 
 @NotTested
 @Buggy
-fun validateWithFacebook(accessToken:String): String? {
+fun validateWithFacebook(accessToken: String): String? {
     return try {
         val url = "https://graph.facebook.com/me?" +
                 "fields=id,name,email&access_token=$accessToken"
@@ -45,18 +46,18 @@ fun validateWithFacebook(accessToken:String): String? {
         val rd = BufferedReader(InputStreamReader(conn.inputStream))
         val line = rd.readLine()
 
-        val tempUser = Gson().fromJson(line,TempFacebookUser::class.java)
+        val tempUser = Gson().fromJson(line, TempFacebookUser::class.java)
         rd.close()
         val hasRegistered = AuthSource().isUserExistInDb(tempUser.id)
-        return if(!hasRegistered)
-            when(register(tempUser)){
+        return if (!hasRegistered)
+            when (register(tempUser)) {
                 0 -> null
                 else -> AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)
             }
         else
             AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)
 
-    }catch (e:IOException){
+    } catch (e: IOException) {
         null
     }
 }
@@ -68,18 +69,12 @@ fun validateWithFacebook(accessToken:String): String? {
  * @param tempFacebookUser tempFacebookUser is just a placeholder needed to construct an object from the HTTP GET to facebook
  * @return noOfRowsChanged
  */
-fun register(tempFacebookUser: TempFacebookUser):Int{
-    val toBeHashed = tempFacebookUser.name +
-            tempFacebookUser.email +
-            tempFacebookUser.id
+fun register(tempFacebookUser: TempFacebookUser): Int = AuthSource().registerUser(User(
+        HashUtil().sha256(tempFacebookUser.name +
+                tempFacebookUser.email +
+                tempFacebookUser.id),
+        tempFacebookUser.name,
+        tempFacebookUser.email,
+        tempFacebookUser.id))
 
-    val hash = MessageDigest.getInstance("SHA-256")
-            .digest(toBeHashed.toByteArray())
-    val user = User(
-            hash.toString(),
-            tempFacebookUser.name,
-            tempFacebookUser.email,
-            tempFacebookUser.id)
 
-    return AuthSource().registerUser(user)
-}

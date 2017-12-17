@@ -1,6 +1,21 @@
 package models
 
+import io.ktor.util.ValuesMap
 import java.sql.Timestamp
+
+data class PostQuery(val postId: String?,
+                     val locationId: Int?,
+                     val userId: String?,
+                     val limit: Int) {
+    companion object {
+        fun fromParams(map: ValuesMap) = PostQuery(
+                postId = map["postId"],
+                locationId = map["locationId"]?.toInt(),
+                userId = map["userId"],
+                limit = map["limit"]?.toInt() ?:20
+        )
+    }
+}
 
 /**
  * Post Object
