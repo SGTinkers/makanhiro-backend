@@ -61,6 +61,13 @@ fun validateWithFacebook(accessToken:String): String? {
     }
 }
 
+/**
+ * This function creates User object from TempFacebookUser
+ * And inserts it into database via AuthSource().registerUser(user)
+ * which takes in a User object
+ * @param tempFacebookUser tempFacebookUser is just a placeholder needed to construct an object from the HTTP GET to facebook
+ * @return noOfRowsChanged
+ */
 fun register(tempFacebookUser: TempFacebookUser):Int{
     val toBeHashed = tempFacebookUser.name +
             tempFacebookUser.email +
