@@ -201,12 +201,6 @@ class PostSource {
 
     @NotCompleted
     @NotTested
-    fun getUserSubscribedPost(userId: String): ArrayList<Post> {
-        TODO("Musa send help for this I not sure for the DB operations")
-    }
-
-    @NotCompleted
-    @NotTested
     fun createPost(post: Post): Boolean {
         val sql = "INSERT INTO post VALUES (?,?,?,?,?,?,?,?,?,?)"
         try {
@@ -247,27 +241,5 @@ class PostSource {
         TODO()
     }
 
-    @NotCompleted
-    @NotTested
-    fun subToPost(userId: String, postId: String): Boolean {
-        TODO()
-    }
 
-    @NotCompleted
-    @NotTested
-    fun unsubFromPost(userId: String, postId: String): Boolean {
-        TODO()
-    }
-
-    @NotCompleted
-    @NotTested
-    fun subToLocation(userId: String, locationId: Int): Boolean {
-        TODO()
-    }
-
-    @NotCompleted
-    @NotTested
-    fun unsubFromLocation(userId: String, locationId: Int): Boolean {
-        TODO()
-    }
 }
