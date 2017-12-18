@@ -27,10 +27,10 @@ data class PostQuery(val postId: String?,
  * Please note that images are optional
  */
 data class Post(val postId: String,
-                val location:Location?,
+                val location:Location,
                 val expiryTime: Timestamp,
                 val images: List<String>?,
-                val dietary: Dietary,
+                val dietary: Dietary?,
                 val description: String,
                 val foodAvailability:FoodAvailability,
                 val createdAt: Timestamp,
