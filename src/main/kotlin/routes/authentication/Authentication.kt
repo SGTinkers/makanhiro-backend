@@ -3,12 +3,10 @@ package routes.authentication
 
 import com.google.gson.Gson
 import database.AuthSource
-import database.HashUtil
+import database.Utils
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
@@ -21,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import models.User
 import java.io.IOException
-import java.security.MessageDigest
 
 
 fun Route.auth(path: String) = route("$path/auth") {
@@ -70,7 +67,7 @@ fun validateWithFacebook(accessToken: String): String? {
  * @return noOfRowsChanged
  */
 fun register(tempFacebookUser: TempFacebookUser): Int = AuthSource().registerUser(User(
-        HashUtil().sha256(tempFacebookUser.name +
+        Utils().sha256(tempFacebookUser.name +
                 tempFacebookUser.email +
                 tempFacebookUser.id),
         tempFacebookUser.name,

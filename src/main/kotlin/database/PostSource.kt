@@ -40,7 +40,7 @@ class PostSource {
             ps.setTimestamp(1, java.sql.Timestamp.valueOf(java.time.LocalDateTime.now()))
             ps.setString(2, query.postId)
             ps.setString(3, query.postId)
-            when (query.locationId) {
+            /*when (query.locationId) {
                 null -> {
                     ps.setNull(4, java.sql.Types.NULL)
                     ps.setNull(5, java.sql.Types.NULL)
@@ -49,7 +49,11 @@ class PostSource {
                     ps.setInt(4, query.locationId)
                     ps.setInt(5, query.locationId)
                 }
-            }
+            }*/
+
+            Utils.setNullIfNull(4,query.locationId,ps)
+            Utils.setNullIfNull(5,query.locationId,ps)
+
             ps.setString(6, query.userId)
             ps.setString(7, query.userId)
             ps.setInt(8, query.limit)

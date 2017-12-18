@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class Validator() {
     fun validatePost(unValidatedPost: ValuesMap, user: User): Post =
             Post(
-                    HashUtil().sha256(user.facebookId + unValidatedPost["description"] + LocalDateTime.now()),
+                    Utils().sha256(user.facebookId + unValidatedPost["description"] + LocalDateTime.now()),
                     validateLocation(unValidatedPost),
                     validateTimestamp(unValidatedPost["expiryTime"]),
                     unValidatedPost["images"].toString().toImageList(),
