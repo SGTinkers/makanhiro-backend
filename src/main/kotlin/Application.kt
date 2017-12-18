@@ -1,3 +1,4 @@
+import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -12,6 +13,7 @@ import io.ktor.server.netty.*
 import models.ErrorMsg
 import routes.*
 import routes.authentication.auth
+import routes.authentication.jwtAuth
 
 fun main(args: Array<String>) {
   startServer()
@@ -39,6 +41,10 @@ fun startServer() = embeddedServer(Netty, 8080) {
 
     val path = "/api/v1"
     routing {
+        intercept(ApplicationCallPipeline.Infrastructure){
+            jwtAuth()
+        }
+
         post(path)
         postSub(path)
         locationSub(path)

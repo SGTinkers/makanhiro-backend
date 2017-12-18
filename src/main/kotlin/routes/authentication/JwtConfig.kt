@@ -14,18 +14,18 @@ import java.util.*
 object JwtConfig {
     private const val secret = "mysupersecretsecretXD" //Please change before compiling
     private const val issuer = "Msociety"
-    private const val validityInMs = 36_000_000 //10hrs
+    private const val validityInMs: Long = 36_000_000 //10hrs
 
-    fun parse(token:String):String = Jwts.parser()
+    fun parse(token: String): String = Jwts.parser()
             .setSigningKey(secret)
-            .parseClaimsJwt(token)
+            .parseClaimsJws(token)
             .body
-            .let({ it -> it["userId"].toString() })
+            .let({ it -> it["id"].toString() })
 
     fun makeToken(user: User): String = Jwts.builder()
-            .setId(user.userId)
             .setSubject("Authentication")
             .setIssuer(issuer)
+            .claim("id", user.userId)
             .claim("email", user.email)
             .signWith(SignatureAlgorithm.HS256, secret)
             .compact()
@@ -33,24 +33,29 @@ object JwtConfig {
     fun getExpiration() = Date(System.currentTimeMillis() + validityInMs)
 }
 
-data class JwtObjForFrontEnd(val token:String,
-                             val expiry:Date)
+data class JwtObjForFrontEnd(val token: String,
+                             val expiry: Date)
 
 @NotTested
-fun PipelineContext<Unit,ApplicationCall>.jwtAuth() {
+fun PipelineContext<Unit, ApplicationCall>.jwtAuth() {
     val token = call.request.header("Authorization")?.removePrefix("Bearer ") ?: return
     val userId = JwtConfig.parse(token)
     val user = AuthSource().getUserById(userId)
-    if(user != null)
-        call.attributes.put(User.key,user)
+    if (user != null)
+        call.attributes.put(User.key, user)
 }
 
 @NotTested
-fun PipelineContext<*, ApplicationCall>.requireLogin(): User = optionalLogin() ?:
-        throw NotLoggedIn("Not Logged in")
+fun PipelineContext<*, ApplicationCall>.requireLogin(): User? = try {
+    optionalLogin()
+}catch (e:IllegalStateException){
+    null
+}
 
-@NotTested
-@NotCompleted
+
+
+
 fun PipelineContext<*, ApplicationCall>.optionalLogin(): User? = call.attributes[User.key]
 
-class NotLoggedIn(var msg: String): Exception()
+
+class NotLoggedIn(var msg: String) : Exception()

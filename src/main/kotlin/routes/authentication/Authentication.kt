@@ -25,8 +25,8 @@ import java.security.MessageDigest
 
 
 fun Route.auth(path: String) = route("$path/auth") {
-    get("/login/{fbAcToken}") {
-        val fbAcToken = call.parameters["fbAcToken"]
+    get("/login") {
+        val fbAcToken = call.parameters["fbToken"]
         val jwt = fbAcToken?.let { it1 -> validateWithFacebook(it1) }
         when (jwt) {
             null -> call.respond(HttpStatusCode.Unauthorized)
