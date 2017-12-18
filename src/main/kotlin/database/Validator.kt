@@ -6,18 +6,18 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 
-class Validator() {
+class Validator {
     fun validatePost(unValidatedPost: ValuesMap, user: User): Post =
             Post(
-                    Utils().sha256(user.facebookId + unValidatedPost["description"] + LocalDateTime.now()),
+                    Utils.sha256(user.facebookId + unValidatedPost["description"] + LocalDateTime.now()),
                     validateLocation(unValidatedPost),
                     validateTimestamp(unValidatedPost["expiryTime"]),
                     unValidatedPost["images"].toString().toImageList(),
                     validateDietary(unValidatedPost["dietary"].toString()),
                     unValidatedPost["description"].toString(),
                     FoodAvailability.valueOf(unValidatedPost["foodAvailability"].toString()),
-                    Timestamp(System.currentTimeMillis()),
-                    Timestamp(System.currentTimeMillis()),
+                    Utils.timeStampNow(),
+                    Utils.timeStampNow(),
                     user.userId
             )
 
@@ -50,11 +50,11 @@ class Validator() {
             Timestamp(SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
                     .parse(dateTimeInString).time)
 
-    fun String.toImageList(): List<String>? {
-        return when (this.isBlank()) {
+    private fun String?.toImageList(): List<String>? {
+        return when (this.isNullOrBlank()) {
             true -> null
             else -> ArrayList<String>(this
-                    .split(","))
+                    ?.split(","))
                     .map { c: String -> c.trim() }
                     .toList()
         }

@@ -67,7 +67,7 @@ fun validateWithFacebook(accessToken: String): String? {
  * @return noOfRowsChanged
  */
 fun register(tempFacebookUser: TempFacebookUser): Int = AuthSource().registerUser(User(
-        Utils().sha256(tempFacebookUser.name +
+        Utils.sha256(tempFacebookUser.name +
                 tempFacebookUser.email +
                 tempFacebookUser.id),
         tempFacebookUser.name,

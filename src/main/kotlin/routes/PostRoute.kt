@@ -27,12 +27,16 @@ fun Route.post(path: String) = route("$path/post"){
     post {
         val user = requireLogin()
         when(user){
-            null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorised")
+            null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized")
             else -> {
                 val post = call.receive<ValuesMap>()
-                val res = PostSource().createPost(Validator().validatePost(post,user))
-                if(res) call.respond("Posted Success")
-                else call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",564))
+                try {
+                    val res = PostSource().createPost(Validator().validatePost(post,user))
+                    if(res) call.respond("Posted Success")
+                        else call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",564))
+                }catch (e: Validator.InvalidPostObject){
+                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",564))
+                }
             }
         }
     }
