@@ -10,7 +10,12 @@ data class PostQuery(val postId: String?,
     companion object {
         fun fromParams(map: ValuesMap) = PostQuery(
                 postId = if(!map["postId"].isNullOrBlank()) map["postId"] else null,
-                locationId = map["locationId"]?.toInt(),
+                locationId = if(!map["locationId"].isNullOrBlank()) try {
+                    map["locationId"]?.toInt()
+                } catch (e:NumberFormatException){
+                    null
+                }
+                else null,
                 userId = if(!map["userId"].isNullOrBlank()) map["userId"] else null,
                 limit = map["limit"]?.toInt() ?:20
         )
