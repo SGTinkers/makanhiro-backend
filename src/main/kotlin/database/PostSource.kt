@@ -18,8 +18,8 @@ class PostSource {
 
     /**
      * Instead of multiple url, have one url that have multiple query params which are
-     * optional.For the SQL statement,leave it as it is as the it will get optimised
-     * by the parser
+     * optional.For the SQL statement,leave it as it is unless there is another
+     * faster way to execute the query
      * @param query PostQuery Object
      * @return arListOfPost ArrayList<Post>
      */
@@ -96,17 +96,17 @@ class PostSource {
     @NotTested
     @MustBeSameUserAsPosterId
     fun editPost(post: Post): Boolean {
-        /*val sql = "UPDATE post SET " +
+        val sql = "UPDATE post SET " +
                 "locationId = ?, " +
-                "expiryTime = ? ," +
-                "images = ? ," +
-                "dietary = ? ," +
-                "description = ? ," +
-                "foodAvailability = ?" +
-                "updatedAt = ? " +
-                "WHERE id = ? " +
+                "expiryTime = ?," +
+                "images = ?," +
+                "dietary = ?," +
+                "description = ?," +
+                "foodAvailability = ?," +
+                "updatedAt = ? "+
+                "WHERE id = ? "+
                 "AND posterI = ? "
-        return try {
+        /*return try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
             Utils.setNullIfNull(1,post.location.locationId,ps)
@@ -127,7 +127,7 @@ class PostSource {
         }catch (e:SQLException){
             false
         }*/
-        TODO("Musa send help")
+        TODO("Musa send help I have no idea how to optimise this")
 
     }
 
