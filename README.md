@@ -11,13 +11,13 @@ For sql file please download from the discord #backend server
  - [x] getPostByLocationId
  - [x] getPostsByUserId
  - [ ] getUserSubscribedPosts
- - [ ] createPost
+ - [x] createPost
  - [ ] editPost
- - [ ] deletePost
- - [ ] subscribeToPost
- - [ ] unsubscribeFromPost
- - [ ] subscribeToLocation
- - [ ] unsubscribeFromLocation
+ - [x] deletePost
+ - [x] subscribeToPost
+ - [x] unsubscribeFromPost
+ - [x] subscribeToLocation
+ - [x] unsubscribeFromLocation
  - [x] auth **(Please contact me if the graph API I used is the wrong one as I am not using a library)**
  - [ ] notifications
     
