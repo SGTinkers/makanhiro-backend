@@ -21,7 +21,6 @@ class Validator {
                     user.userId
             )
 
-
     private fun validateLocation(unValidatedPost: ValuesMap): Location {
         val locationInt = try {
             unValidatedPost["locationId"]?.toInt()

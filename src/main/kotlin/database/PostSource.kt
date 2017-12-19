@@ -65,7 +65,6 @@ class PostSource {
         return res
     }
 
-    @NotCompleted
     @TestedNotComprehensive
     @RequiresAuth
     fun createPost(post: Post): Boolean {
@@ -97,14 +96,59 @@ class PostSource {
     @NotTested
     @MustBeSameUserAsPosterId
     fun editPost(post: Post): Boolean {
-        TODO()
+        /*val sql = "UPDATE post SET " +
+                "locationId = ?, " +
+                "expiryTime = ? ," +
+                "images = ? ," +
+                "dietary = ? ," +
+                "description = ? ," +
+                "foodAvailability = ?" +
+                "updatedAt = ? " +
+                "WHERE id = ? " +
+                "AND posterI = ? "
+        return try {
+            val conn = getDbConnection()
+            val ps = conn.prepareStatement(sql)
+            Utils.setNullIfNull(1,post.location.locationId,ps)
+            ps.setTimestamp(2,post.expiryTime)
+            Utils.setNullIfNull(3,post.images,ps)
+            Utils.setNullIfNull(4,post.dietary.toString(),ps)
+            ps.setString(6, post.description)
+            ps.setString(7, post.foodAvailability.toString())
+            ps.setTimestamp(8, post.updatedAt)
+            ps.setString(9,post.postId)
+            ps.setString(10, post.posterId)
+
+            val rs = ps.executeUpdate()
+            ps.close()
+            conn.close()
+
+            rs != 0
+        }catch (e:SQLException){
+            false
+        }*/
+        TODO("Musa send help")
+
     }
 
-    @NotCompleted
-    @NotTested
+    @TestedNotComprehensive
     @MustBeSameUserAsPosterId
-    fun deletePost(postId: String): Boolean {
-        TODO()
+    fun deletePost(postId: String?,user:User): Boolean {
+        val sql = "DELETE FROM post " +
+                "WHERE id = ? AND posterId = ?"
+        return try {
+            val conn = getDbConnection()
+            val ps = conn.prepareStatement(sql)
+            Utils.setNullIfNull(1,postId,ps)
+            ps.setString(2,user.userId)
+            val rs = ps.executeUpdate()
+            ps.close()
+            conn.close()
+
+            rs != 0
+        }catch (e:SQLException){
+            false
+        }
     }
 
 }

@@ -10,14 +10,11 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
-import models.Buggy
-import models.NotTested
-import models.TempFacebookUser
+import models.*
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import models.User
 import java.io.IOException
 
 
@@ -32,8 +29,7 @@ fun Route.auth(path: String) = route("$path/auth") {
     }
 }
 
-@NotTested
-@Buggy
+@TestedNotComprehensive
 fun validateWithFacebook(accessToken: String): String? {
     return try {
         val url = "https://graph.facebook.com/me?" +
@@ -66,6 +62,7 @@ fun validateWithFacebook(accessToken: String): String? {
  * @param tempFacebookUser tempFacebookUser is just a placeholder needed to construct an object from the HTTP GET to facebook
  * @return noOfRowsChanged
  */
+@TestedNotComprehensive
 fun register(tempFacebookUser: TempFacebookUser): Int = AuthSource().registerUser(User(
         Utils.sha256(tempFacebookUser.name +
                 tempFacebookUser.email +
