@@ -3,6 +3,7 @@ package database
 import models.NotCompleted
 import models.NotTested
 import models.Post
+import models.TestedNotComprehensive
 import java.sql.SQLException
 
 class SubscriptionSource {
@@ -10,8 +11,7 @@ class SubscriptionSource {
     @NotTested
     fun getUserSubscribedPost(userId: String): ArrayList<Post> { TODO() }
 
-    @NotCompleted
-    @NotTested
+    @TestedNotComprehensive
     fun subToPost(userId: String, postId: String): Boolean {
         val sql = "INSERT INTO postsub VALUES (?,?)"
         return try {
