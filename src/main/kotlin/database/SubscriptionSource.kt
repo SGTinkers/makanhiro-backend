@@ -17,13 +17,12 @@ class SubscriptionSource {
         return try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            ps.setString(1,userId)
-            ps.setString(2,postId)
+            ps.setString(1,postId)
+            ps.setString(2,userId)
 
             val rs = ps.executeUpdate()
             ps.close()
             conn.close()
-
             rs != 0
         }catch (e:SQLException){
             false

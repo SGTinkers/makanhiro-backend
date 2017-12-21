@@ -9,8 +9,6 @@ import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.ValuesMap
 import models.*
-import routes.authentication.NotLoggedIn
-import routes.authentication.optionalLogin
 import routes.authentication.requireLogin
 
 @NotCompleted
