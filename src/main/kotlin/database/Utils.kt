@@ -19,10 +19,16 @@ class Utils {
         fun <T> setNullIfNull(parameterIndex: Int, t: T, ps: PreparedStatement) {
             when (t) {
                 null -> ps.setNull(parameterIndex, java.sql.Types.NULL)
-                is String -> ps.setString(parameterIndex, t)
+                is String -> {
+                    if(t.isBlank())
+                        ps.setString(parameterIndex, null)
+                    else
+                        ps.setString(parameterIndex, t)
+                }
+                is Dietary -> ps.setString(parameterIndex,t.toString())
                 is Int -> ps.setInt(parameterIndex, t)
                 is Timestamp -> ps.setTimestamp(parameterIndex, t)
-                else -> throw NotImplementedError()
+                else -> throw NotImplementedError("This feature haven't been implemented")
             }
         }
 

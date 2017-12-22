@@ -76,7 +76,7 @@ class PostSource {
             ps.setInt(2, post.location.locationId)
             ps.setTimestamp(3, post.expiryTime)
             Utils.setNullIfNull(4,post.images,ps)
-            Utils.setNullIfNull(5,post.dietary.toString(),ps)
+            Utils.setNullIfNull(5,post.dietary,ps)
             ps.setString(6, post.description)
             ps.setString(7, post.foodAvailability.toString())
             ps.setTimestamp(8, post.createdAt)
@@ -86,7 +86,7 @@ class PostSource {
 
             ps.close()
             conn.close()
-            (rs != 0)
+            rs != 0
         } catch (e: SQLException) {
             false
         }
