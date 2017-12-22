@@ -11,8 +11,7 @@ import models.*
 import routes.authentication.requireLogin
 import java.sql.SQLException
 
-@NotCompleted
-@NotTested
+@TestedNotComprehensive
 fun Route.locationSub(path:String) = route("$path/locationSub") {
     get {
         val user = requireLogin()

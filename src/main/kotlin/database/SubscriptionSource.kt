@@ -10,8 +10,7 @@ class SubscriptionSource {
      * @param userId
      * @return locationSub
      */
-    @NotCompleted
-    @NotTested
+    @MustBeSameUserAsPosterId
     fun getLocationSub(userId: String):ArrayList<Int> {
         val sql = "SELECT * FROM locationSub WHERE userId = ?"
         val res = ArrayList<Int>()
@@ -41,6 +40,7 @@ class SubscriptionSource {
      * @param userId
      * @return arList<PostSub>
      */
+    @MustBeSameUserAsPosterId
     fun getPostSub(userId: String):ArrayList<String> {
         val sql = "SELECT * FROM postsub WHERE userId = ?"
         val res = ArrayList<String>()
@@ -72,7 +72,7 @@ class SubscriptionSource {
      * @param postId postId taken from User
      * @return hasInserted
      */
-    @TestedNotComprehensive
+    @MustBeSameUserAsPosterId
     fun subToPost(userId: String, postId: String): Boolean {
         val sql = "INSERT INTO postsub VALUES (?,?,?)"
         return try {
@@ -99,7 +99,7 @@ class SubscriptionSource {
      * @param postId postId taken from User
      * @return hasDeleted
      */
-    @TestedNotComprehensive
+    @MustBeSameUserAsPosterId
     fun unsubFromPost(userId: String, postId: String): Boolean {
         val sql = "DELETE FROM postsub WHERE userId = ? AND postId = ?"
         return try {
@@ -125,7 +125,7 @@ class SubscriptionSource {
      * @param locationId locationId taken from User
      * @return hasInserted
      */
-    @TestedNotComprehensive
+    @MustBeSameUserAsPosterId
     fun subToLocation(userId: String, locationId: Int): Boolean {
         val sql = "INSERT INTO locationsub VALUES (?,?,?)"
         return try {
@@ -154,7 +154,7 @@ class SubscriptionSource {
      * @param locationId locationId taken from User
      * @return hasDeleted
      */
-    @TestedNotComprehensive
+    @MustBeSameUserAsPosterId
     fun unsubFromLocation(userId: String, locationId: Int): Boolean {
         val sql = "DELETE FROM locationsub WHERE userId = ? AND locationId = ?"
         return try {

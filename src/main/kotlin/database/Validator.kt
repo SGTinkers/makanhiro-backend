@@ -58,6 +58,4 @@ class Validator {
                     .toList()
         }
     }
-
-    class InvalidPostObject(msg: String) : Exception(msg)
 }

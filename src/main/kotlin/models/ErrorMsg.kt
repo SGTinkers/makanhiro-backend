@@ -11,3 +11,4 @@ const val INVALID_LOCATIONID = 1782
 const val DUPLICATE_RECORDS_FOUND = 8451
 
 class DuplicateFound(msg: String): Exception(msg)
+class InvalidPostObject(msg: String) : Exception(msg)

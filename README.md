@@ -10,7 +10,7 @@ For sql file please download from the discord #backend server
  - [x] getPostById
  - [x] getPostByLocationId
  - [x] getPostsByUserId
- - [ ] getUserSubscribedPosts
+ - [x] getUserSubscribedPosts
  - [x] createPost
  - [ ] editPost
  - [x] deletePost

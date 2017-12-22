@@ -18,7 +18,6 @@ fun Route.post(path: String) = route("$path/post"){
         val query = PostQuery.fromParams(call.parameters)
         call.respond(PostSource().getPosts(query))
     }
-
     post {
         val user = requireLogin()
         when(user){
@@ -30,7 +29,7 @@ fun Route.post(path: String) = route("$path/post"){
                     if(res) call.respond("Posted Success")
 
                     call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POST_STRUCT))
-                }catch (e: Validator.InvalidPostObject){
+                }catch (e: InvalidPostObject){
                     call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",INVALID_POST_STRUCT))
                 }
             }
@@ -47,7 +46,7 @@ fun Route.post(path: String) = route("$path/post"){
                     if(res) call.respond("Updated Success")
 
                     call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POST_STRUCT))
-                }catch (e:Validator.InvalidPostObject){
+                }catch (e:InvalidPostObject){
                     call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POST_STRUCT))
                 }
             }
