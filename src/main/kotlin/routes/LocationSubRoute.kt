@@ -7,17 +7,27 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.ValuesMap
-import models.ErrorMsg
-import models.INVALID_LOCATIONID
-import models.NotCompleted
-import models.NotTested
+import models.*
 import routes.authentication.requireLogin
 import java.sql.SQLException
 
 @NotCompleted
 @NotTested
 fun Route.locationSub(path:String) = route("$path/locationSub") {
-    get { TODO() }
+    get {
+        val user = requireLogin()
+        when(user){
+            null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized")
+            else -> {
+                try {
+                    val res = SubscriptionSource().getLocationSub(user.userId)
+                    call.respond(res)
+                }catch (e:SQLException){
+                    call.respond(HttpStatusCode.BadRequest,"Bad Request")
+                }
+            }
+        }
+    }
     post {
         val user = requireLogin()
         val locationId = call.receive<ValuesMap>()["locationId"]
@@ -41,6 +51,9 @@ fun Route.locationSub(path:String) = route("$path/locationSub") {
                 }catch (e:NumberFormatException){
                     call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request. Invalid locationId",
                             INVALID_LOCATIONID))
+                }catch (e:DuplicateFound){
+                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request. Invalid locationId",
+                            DUPLICATE_RECORDS_FOUND))
                 }
             }
         }

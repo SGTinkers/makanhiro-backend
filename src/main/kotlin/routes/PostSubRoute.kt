@@ -11,11 +11,21 @@ import models.*
 import routes.authentication.requireLogin
 import java.sql.SQLException
 
-@NotCompleted
-@NotTested
+@TestedNotComprehensive
 fun Route.postSub(path:String) = route("$path/postSub") {
     get {
-
+        val user = requireLogin()
+        when(user) {
+            null -> call.respond(HttpStatusCode.Unauthorized,"Unauthorized")
+            else -> {
+                try {
+                    val res = SubscriptionSource().getPostSub(user.userId)
+                    call.respond(res)
+                }catch (e:SQLException){
+                    call.respond(HttpStatusCode.BadRequest,"Bad Request")
+                }
+            }
+        }
     }
     post {
         val user = requireLogin()
@@ -31,8 +41,8 @@ fun Route.postSub(path:String) = route("$path/postSub") {
                         call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POSTID))
                     else
                         call.respond("Successfully subbed to $postId")
-                }catch (e:SQLException){
-                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POSTID))
+                }catch (e:DuplicateFound){
+                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", DUPLICATE_RECORDS_FOUND))
                 }
             }
         }
