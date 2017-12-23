@@ -106,13 +106,13 @@ class PostSource {
                 "updatedAt = ? "+
                 "WHERE id = ? "+
                 "AND posterI = ? "
-        /*return try {
+        return try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
             Utils.setNullIfNull(1,post.location.locationId,ps)
             ps.setTimestamp(2,post.expiryTime)
             Utils.setNullIfNull(3,post.images,ps)
-            Utils.setNullIfNull(4,post.dietary.toString(),ps)
+            Utils.setNullIfNull(4,post.dietary,ps)
             ps.setString(6, post.description)
             ps.setString(7, post.foodAvailability.toString())
             ps.setTimestamp(8, post.updatedAt)
@@ -126,9 +126,7 @@ class PostSource {
             rs != 0
         }catch (e:SQLException){
             false
-        }*/
-        TODO("Musa send help I have no idea how to optimise this")
-
+        }
     }
 
     @TestedNotComprehensive
