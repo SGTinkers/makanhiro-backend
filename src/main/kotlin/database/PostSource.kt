@@ -1,11 +1,7 @@
 package database
 
-import io.ktor.util.ValuesMap
 import models.*
 import java.sql.*
-import java.sql.Date
-import java.time.LocalDate
-import java.time.LocalDateTime.now
 import kotlin.collections.ArrayList
 
 /**
@@ -23,7 +19,6 @@ class PostSource {
      * @param query PostQuery Object
      * @return arListOfPost ArrayList<Post>
      */
-    @TestedNotComprehensive
     fun getPosts(query: PostQuery): ArrayList<Post> {
         val res = ArrayList<Post>()
         val sql =
@@ -38,18 +33,18 @@ class PostSource {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
 
-            Utils.setTimeStampNow(1,ps)
+            ps.setTimeStampNow(1)
             ps.setString(2, query.postId)
             ps.setString(3, query.postId)
-            Utils.setNullIfNull(4,query.locationId,ps)
-            Utils.setNullIfNull(5,query.locationId,ps)
+            ps.setNullIfNull(4,query.locationId)
+            ps.setNullIfNull(5,query.locationId)
             ps.setString(6, query.userId)
             ps.setString(7, query.userId)
             ps.setInt(8, query.limit)
             val rs = ps.executeQuery()
 
             while (rs.next()) {
-                val tempPost = Utils.dbResToPostObject(rs)
+                val tempPost = rs.toPostObject()
                 res.add(tempPost)
             }
 
@@ -75,8 +70,8 @@ class PostSource {
             ps.setString(1, post.postId)
             ps.setInt(2, post.location.locationId)
             ps.setTimestamp(3, post.expiryTime)
-            Utils.setNullIfNull(4,post.images?.joinToString(","),ps)
-            Utils.setNullIfNull(5,post.dietary,ps)
+            ps.setNullIfNull(4,post.images?.joinToString(","))
+            ps.setNullIfNull(5,post.dietary)
             ps.setString(6, post.description)
             ps.setString(7, post.foodAvailability.toString())
             ps.setTimestamp(8, post.createdAt)
@@ -105,19 +100,20 @@ class PostSource {
                 "foodAvailability = ?," +
                 "updatedAt = ? "+
                 "WHERE id = ? "+
-                "AND posterI = ? "
+                "AND posterId = ? "
+
         return try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            Utils.setNullIfNull(1,post.location.locationId,ps)
+            ps.setNullIfNull(1,post.location.locationId)
             ps.setTimestamp(2,post.expiryTime)
-            Utils.setNullIfNull(3,post.images,ps)
-            Utils.setNullIfNull(4,post.dietary,ps)
-            ps.setString(6, post.description)
-            ps.setString(7, post.foodAvailability.toString())
-            ps.setTimestamp(8, post.updatedAt)
-            ps.setString(9,post.postId)
-            ps.setString(10, post.posterId)
+            ps.setNullIfNull(3,post.images?.joinToString(","))
+            ps.setNullIfNull(4,post.dietary)
+            ps.setString(5, post.description)
+            ps.setString(6, post.foodAvailability.toString())
+            ps.setTimestamp(7, post.updatedAt)
+            ps.setString(8,post.postId)
+            ps.setString(9, post.posterId)
 
             val rs = ps.executeUpdate()
             ps.close()
@@ -129,7 +125,6 @@ class PostSource {
         }
     }
 
-    @TestedNotComprehensive
     @MustBeSameUserAsPosterId
     fun deletePost(postId: String?,user:User): Boolean {
         val sql = "DELETE FROM post " +
@@ -137,7 +132,7 @@ class PostSource {
         return try {
             val conn = getDbConnection()
             val ps = conn.prepareStatement(sql)
-            Utils.setNullIfNull(1,postId,ps)
+            ps.setNullIfNull(1,postId)
             ps.setString(2,user.userId)
             val rs = ps.executeUpdate()
             ps.close()

@@ -3,7 +3,6 @@ package database
 import io.ktor.request.MultiPartData
 import io.ktor.request.PartData
 import io.ktor.request.forEachPart
-import io.ktor.util.ValuesMap
 import models.*
 import java.io.File
 import java.sql.Timestamp
@@ -11,9 +10,18 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 
 class Validator {
+    /**
+     * This ensures that every post from users are legitimate so that it reduces the work the SQL database
+     * does.
+     * @param unValidatedPost
+     * @param user
+     * @return
+     */
     fun validatePost(unValidatedPost: HashMap<String,String>, user: User): Post =
             Post(
-                    Utils.sha256(user.facebookId + unValidatedPost["description"] + LocalDateTime.now()),
+                    if (!unValidatedPost.containsKey("postId"))
+                        Utils.sha256(user.facebookId + unValidatedPost["description"] + LocalDateTime.now())
+                    else unValidatedPost["postId"].toString(),
                     validateLocation(unValidatedPost["locationId"]),
                     validateTimestamp(unValidatedPost["expiryTime"]),
                     unValidatedPost["images"].toImageList(),
@@ -25,6 +33,11 @@ class Validator {
                     user.userId
             )
 
+    /**
+     * Validates location provided by User
+     * @param unValidatedPost
+     * @return Location
+     */
     private fun validateLocation(unValidatedPost: String?): Location {
         val locationInt = try {
             unValidatedPost?.toInt()
@@ -45,18 +58,35 @@ class Validator {
 
     }
 
+    /**
+     * Validates Dietary Enums
+     * @param dietaryString
+     * @return Dietary?
+     */
     private fun validateDietary(dietaryString: String?): Dietary? =
             if (dietaryString.isNullOrBlank()) null
                     else dietaryString?.let { Dietary.valueOf(it) }
 
+    /**
+     * Validates TimeStamp with Format of dd-MM-yyyy hh:mm:ss
+     * @param dateTimeInString
+     * @return TimeStamp
+     */
     private fun validateTimestamp(dateTimeInString: String?): Timestamp =
             Timestamp(SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
                     .parse(dateTimeInString).time)
 
-    suspend fun validateMultiPartPost(user:User,mpartData: MultiPartData):HashMap<String,String>{
-        //Validate normal fields
+    /**
+     * Validates MultiPartPost which may contain images
+     * Images are limited to 3mb and only takes in
+     * jpg || jpeg || png
+     * @param user
+     * @param mPartData
+     * @return HashMap<String,String>
+     */
+    suspend fun validateMultiPartPost(user:User,mPartData: MultiPartData):HashMap<String,String>{
         val postHm = HashMap<String,String>()
-        mpartData.forEachPart {
+        mPartData.forEachPart {
             if(it is PartData.FormItem) {
                 when(it.partName){
                     "locationId" -> postHm.put(it.partName.toString(),it.value)
@@ -64,56 +94,46 @@ class Validator {
                     "dietary" -> postHm.put(it.partName.toString(),it.value)
                     "description" -> postHm.put(it.partName.toString(),it.value)
                     "foodAvailability" -> postHm.put(it.partName.toString(),it.value)
+                    "postId" -> postHm.put(it.partName.toString(),it.value)
                 }
             }else if (it is PartData.FileItem){
                 val ext = File(it.originalFileName).extension
                 val fileSizeInMb = File(it.originalFileName).length() / 1024 / 1024
-                if(ext != "jpg")
-                    throw InvalidFileExtension("Invalid File extension. File with extension of $ext was found")
+                var totalSize:Long = 0
+
+                if(!ext.isValidFileExt())
+                    throw InvalidFileExtension("Invalid file ext of $ext was found!")
+
                 if(fileSizeInMb > MAX_SIZE)
                     throw FileSizeTooBig("File size is $fileSizeInMb. Max file size is $FILE_SIZE_TOO_BIG")
 
                 val fileName = "${System.currentTimeMillis()}.$ext"
-                val dir = File(IMAGES_DIR + user.userId)
-                val imageDir = File(dir,
-                        fileName)
+                val dir = File(IMAGES_DIR  + "\\public\\"+ user.userId)
+                val imageDir = File(dir, fileName)
+
                 if(!dir.exists())
                     try {
                         dir.mkdir()
                     }catch (e:SecurityException){
                         e.printStackTrace()
                     }
-                    //create directory if it doesn't exist
-                    /*if(!dir.exists()){
-                        println("Creating dir for user ${user.userId}")
-                        try {
-                            dir.mkdir()
-                            println("Dir created")
-                        }catch (e:SecurityException){
-                            println("You do not have permission to create a directory in this directory")
-                        }
-                    }*/
+
                 it.streamProvider().use { its -> imageDir.outputStream().buffered().use {
                     its.copyTo(it)
                 }}
-                if(!postHm.containsKey("images"))
+
+                if(totalSize > 9)
+                    throw FileSizeTooBig("You have exceeded file limit of 9mb! Your file size $totalSize")
+
+                totalSize += if(!postHm.containsKey("images")){
                     postHm.put("images", fileName)
-                else
-                    postHm.put("images",postHm["images"] +",$fileName" )
+                    fileSizeInMb
+                } else {
+                    postHm.put("images", postHm["images"] + ",$fileName")
+                    fileSizeInMb
+                }
             }
         }
         return postHm
-    }
-}
-
-
-
-fun String?.toImageList(): List<String>? {
-    return when (this.isNullOrBlank()) {
-        true -> null
-        else -> ArrayList<String>(this
-                ?.split(","))
-                .map { c: String -> c.trim() }
-                .toList()
     }
 }

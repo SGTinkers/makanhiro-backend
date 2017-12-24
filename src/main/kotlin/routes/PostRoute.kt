@@ -40,23 +40,27 @@ fun Route.post(path: String) = route("$path/post"){
             }
         }
     }
-    /*put {
+    put {
         val user = requireLogin()
         when(user){
             null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized")
             else -> {
-                val post = call.receive<ValuesMap>()
-                try {
-                    val res = PostSource().editPost(Validator().validatePost(post,user))
-                    if(res) call.respond("Updated Success")
-
-                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POST_STRUCT))
+                val multipart = call.receiveMultipart()
+                try{
+                    val validatedMultiPart = Validator().validateMultiPartPost(user,multipart)
+                    val res = PostSource().editPost(Validator().validatePost(validatedMultiPart,user))
+                    if(res)
+                        call.respond("Post Update success")
+                    else
+                        call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",INVALID_POST_STRUCT))
                 }catch (e:InvalidPostObject){
-                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POST_STRUCT))
+                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",INVALID_POST_STRUCT))
+                }catch (e:FileSizeTooBig){
+                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",FILE_SIZE_TOO_BIG))
                 }
             }
         }
-    }*/
+    }
     delete {
         val user = requireLogin()
         when(user){

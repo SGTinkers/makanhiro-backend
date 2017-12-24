@@ -1,100 +1,115 @@
-CREATE TABLE location
+create table location
 (
-  locationId      INT                                                       NOT NULL
-    PRIMARY KEY,
-  locationName    ENUM ('NUS', 'NTU', 'SMU', 'SP', 'RP', 'NP', 'NYP', 'TP') NOT NULL,
-  locationDetails VARCHAR(50)                                               NOT NULL,
-  CONSTRAINT location_location_id_uindex
-  UNIQUE (locationId),
-  CONSTRAINT location_location_details_uindex
-  UNIQUE (locationDetails)
+  locationId int not null
+    primary key,
+  locationName enum('NUS', 'NTU', 'SMU', 'SP', 'RP', 'NP', 'NYP', 'TP') not null,
+  locationDetails varchar(50) not null,
+  constraint location_location_id_uindex
+  unique (locationId),
+  constraint location_location_details_uindex
+  unique (locationDetails)
 )
-  ENGINE = InnoDB;
+  engine=InnoDB
+;
 
-CREATE TABLE locationsub
+create table locationsub
 (
-  id         CHAR(40) NOT NULL
-    PRIMARY KEY,
-  userId     CHAR(64) NOT NULL,
-  locationId INT      NOT NULL,
-  CONSTRAINT locationId_location_locationId_fk
-  FOREIGN KEY (locationId) REFERENCES location (locationId)
+  id char(40) not null
+    primary key,
+  userId char(64) not null,
+  locationId int not null,
+  constraint locationId_location_locationId_fk
+  foreign key (locationId) references location (locationId)
 )
-  ENGINE = InnoDB;
+  engine=InnoDB
+;
 
-CREATE INDEX locationsub_user_userId_fk
-  ON locationsub (userId);
+create index locationsub_user_userId_fk
+  on locationsub (userId)
+;
 
-CREATE INDEX locationId_location_locationId_fk
-  ON locationsub (locationId);
+create index locationId_location_locationId_fk
+  on locationsub (locationId)
+;
 
-CREATE TABLE post
+create table post
 (
-  id               CHAR(64)                                   NOT NULL
-    PRIMARY KEY,
-  locationId       INT                                        NOT NULL,
-  expiryTime       TIMESTAMP                                  NOT NULL ON UPDATE CURRENT_TIMESTAMP,
-  images           VARCHAR(4000)                              NULL,
-  dietary          ENUM ('HALAL', 'VEGETARIAN')               NULL,
-  description      VARCHAR(200)                               NULL,
-  foodAvailability ENUM ('ABUNDANT', 'FINISHING', 'FINISHED') NOT NULL,
-  createdAt        TIMESTAMP DEFAULT '0000-00-00 00:00:00'    NOT NULL,
-  updatedAt        TIMESTAMP DEFAULT '0000-00-00 00:00:00'    NOT NULL,
-  posterId         CHAR(64)                                   NOT NULL,
-  CONSTRAINT post_id_uindex
-  UNIQUE (id),
-  CONSTRAINT post_location_location_id_fk
-  FOREIGN KEY (locationId) REFERENCES location (locationId)
+  id char(64) not null
+    primary key,
+  locationId int not null,
+  expiryTime timestamp not null on update CURRENT_TIMESTAMP,
+  images varchar(4000) null,
+  dietary enum('HALAL', 'VEGETARIAN') null,
+  description varchar(200) null,
+  foodAvailability enum('ABUNDANT', 'FINISHING', 'FINISHED') not null,
+  createdAt timestamp default '0000-00-00 00:00:00' not null,
+  updatedAt timestamp default '0000-00-00 00:00:00' not null,
+  posterId char(64) not null,
+  constraint post_id_uindex
+  unique (id),
+  constraint post_location_location_id_fk
+  foreign key (locationId) references location (locationId)
 )
-  ENGINE = InnoDB;
+  engine=InnoDB
+;
 
-CREATE INDEX post_location_location_id_fk
-  ON post (locationId);
+create index post_location_location_id_fk
+  on post (locationId)
+;
 
-CREATE INDEX post_user_userId_fk
-  ON post (posterId);
+create index post_user_userId_fk
+  on post (posterId)
+;
 
-CREATE TABLE postsub
+create table postsub
 (
-  id     CHAR(40) NOT NULL
-    PRIMARY KEY,
-  userId CHAR(64) NULL,
-  postId CHAR(64) NOT NULL,
-  CONSTRAINT postSub_post_id_fk
-  UNIQUE (postId),
-  CONSTRAINT postsub_post_id_fk
-  FOREIGN KEY (postId) REFERENCES post (id)
+  id char(40) not null
+    primary key,
+  userId char(64) null,
+  postId char(64) not null,
+  constraint postSub_post_id_fk
+  unique (postId),
+  constraint postsub_post_id_fk
+  foreign key (postId) references post (id)
+    on delete cascade
 )
-  ENGINE = InnoDB;
+  engine=InnoDB
+;
 
-CREATE INDEX postSub_user_userId_fk
-  ON postsub (userId);
+create index postSub_user_userId_fk
+  on postsub (userId)
+;
 
-CREATE TABLE user
+create table user
 (
-  userId     CHAR(64)     NOT NULL
-    PRIMARY KEY,
-  fullName   VARCHAR(150) NOT NULL,
-  email      VARCHAR(150) NOT NULL,
-  facebookId VARCHAR(150) NOT NULL,
-  CONSTRAINT user_user_id_uindex
-  UNIQUE (userId),
-  CONSTRAINT user_email_uindex
-  UNIQUE (email),
-  CONSTRAINT user_facebook_id_uindex
-  UNIQUE (facebookId)
+  userId char(64) not null
+    primary key,
+  fullName varchar(150) not null,
+  email varchar(150) not null,
+  facebookId varchar(150) not null,
+  constraint user_user_id_uindex
+  unique (userId),
+  constraint user_email_uindex
+  unique (email),
+  constraint user_facebook_id_uindex
+  unique (facebookId)
 )
-  ENGINE = InnoDB;
+  engine=InnoDB
+;
 
-ALTER TABLE locationsub
-  ADD CONSTRAINT locationsub_user_userId_fk
-FOREIGN KEY (userId) REFERENCES user (userId);
+alter table locationsub
+  add constraint locationsub_user_userId_fk
+foreign key (userId) references user (userId)
+;
 
-ALTER TABLE post
-  ADD CONSTRAINT post_user_userId_fk
-FOREIGN KEY (posterId) REFERENCES user (userId);
+alter table post
+  add constraint post_user_userId_fk
+foreign key (posterId) references user (userId)
+;
 
-ALTER TABLE postsub
-  ADD CONSTRAINT postsub_user_userId_fk
-FOREIGN KEY (userId) REFERENCES user (userId);
+alter table postsub
+  add constraint postsub_user_userId_fk
+foreign key (userId) references user (userId)
+  on delete cascade
+;
 

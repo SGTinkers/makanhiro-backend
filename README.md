@@ -19,7 +19,7 @@ For sql file please download from the discord #backend server
  - [x] subscribeToLocation
  - [x] unsubscribeFromLocation
  - [x] auth **(Please contact me if the graph API I used is the wrong one as I am not using a library)**
- - [ ] image upload
+ - [x] image upload
  - [ ] notifications
     
 ## Technical Specs

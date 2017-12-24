@@ -23,21 +23,6 @@ fun main(args: Array<String>) {
 }
 
 fun startServer() = embeddedServer(Netty, 8080) {
-
-    install(StatusPages){
-        status(HttpStatusCode.BadRequest) {
-            call.response.status(HttpStatusCode.BadRequest)
-            call.respond(ErrorMsg("Invalid Format found!",0))
-        }
-        status(HttpStatusCode.Forbidden){
-            call.response.status(HttpStatusCode.Forbidden)
-            call.respond(ErrorMsg("Forbidden",1))
-        }
-        status(HttpStatusCode.NoContent){
-            call.response.status(HttpStatusCode.NoContent)
-            call.respond(ErrorMsg("Resource not found",2))
-        }
-    }
     install(ContentNegotiation) {
         gson { setPrettyPrinting() }
     }
@@ -48,14 +33,16 @@ fun startServer() = embeddedServer(Netty, 8080) {
             jwtAuth()
         }
 
+        static("images") {
+            staticRootFolder = File(IMAGES_DIR)
+            files("public")
+        }
+
         post(path)
         postSub(path)
         locationSub(path)
         auth(path)
-        images(path)
-        static("images") {
-            TODO("сука Блять")
-        }
+
     }
 }.start(wait = true)
 

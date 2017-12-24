@@ -20,5 +20,5 @@ fun getDbConnection():Connection {
     return DriverManager.getConnection(dbUrl,user,password)
 }
 
-const val IMAGES_DIR = "C:\\Users\\Budi Syahiddin\\Desktop\\test\\"
+const val IMAGES_DIR = "C:\\Users\\Budi Syahiddin\\Desktop\\test"
 const val MAX_SIZE = 3
