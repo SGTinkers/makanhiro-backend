@@ -1,6 +1,8 @@
+import database.IMAGES_DIR
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.content.*
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
@@ -14,6 +16,7 @@ import models.ErrorMsg
 import routes.*
 import routes.authentication.auth
 import routes.authentication.jwtAuth
+import java.io.File
 
 fun main(args: Array<String>) {
   startServer()
@@ -50,6 +53,9 @@ fun startServer() = embeddedServer(Netty, 8080) {
         locationSub(path)
         auth(path)
         images(path)
+        static("images") {
+            TODO("сука Блять")
+        }
     }
 }.start(wait = true)
 
