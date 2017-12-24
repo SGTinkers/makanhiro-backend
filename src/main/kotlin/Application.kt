@@ -49,6 +49,7 @@ fun startServer() = embeddedServer(Netty, 8080) {
         postSub(path)
         locationSub(path)
         auth(path)
+        images(path)
     }
 }.start(wait = true)
 

@@ -5,6 +5,7 @@ import database.Validator
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
+import io.ktor.request.receiveMultipart
 import io.ktor.response.respond
 import io.ktor.routing.*
 import io.ktor.util.ValuesMap
@@ -23,19 +24,23 @@ fun Route.post(path: String) = route("$path/post"){
         when(user){
             null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized")
             else -> {
-                val post = call.receive<ValuesMap>()
-                try {
-                    val res = PostSource().createPost(Validator().validatePost(post,user))
-                    if(res) call.respond("Posted Success")
-
-                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", INVALID_POST_STRUCT))
-                }catch (e: InvalidPostObject){
+                val multipart = call.receiveMultipart()
+                try{
+                    val validatedMultiPart = Validator().validateMultiPartPost(user,multipart)
+                    val res = PostSource().createPost(Validator().validatePost(validatedMultiPart,user))
+                    if(res)
+                        call.respond("Posted Success")
+                    else
+                        call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",INVALID_POST_STRUCT))
+                }catch (e:InvalidPostObject){
                     call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",INVALID_POST_STRUCT))
+                }catch (e:FileSizeTooBig){
+                    call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request",FILE_SIZE_TOO_BIG))
                 }
             }
         }
     }
-    put {
+    /*put {
         val user = requireLogin()
         when(user){
             null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized")
@@ -51,7 +56,7 @@ fun Route.post(path: String) = route("$path/post"){
                 }
             }
         }
-    }
+    }*/
     delete {
         val user = requireLogin()
         when(user){

@@ -37,7 +37,6 @@ data class Post(val postId: String,
                 val updatedAt: Timestamp,
                 val posterId: String)
 
-
 enum class Dietary {
     HALAL, VEGETARIAN
 }

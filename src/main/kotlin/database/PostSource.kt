@@ -75,7 +75,7 @@ class PostSource {
             ps.setString(1, post.postId)
             ps.setInt(2, post.location.locationId)
             ps.setTimestamp(3, post.expiryTime)
-            Utils.setNullIfNull(4,post.images,ps)
+            Utils.setNullIfNull(4,post.images?.joinToString(","),ps)
             Utils.setNullIfNull(5,post.dietary,ps)
             ps.setString(6, post.description)
             ps.setString(7, post.foodAvailability.toString())
