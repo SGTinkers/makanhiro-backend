@@ -108,7 +108,7 @@ class Validator {
                     throw FileSizeTooBig("File size is $fileSizeInMb. Max file size is $FILE_SIZE_TOO_BIG")
 
                 val fileName = "${System.currentTimeMillis()}.$ext"
-                val dir = File(IMAGES_DIR  + "\\public\\"+ user.userId)
+                val dir = File(IMAGES_DIR + "/images/" +user.userId)
                 val imageDir = File(dir, fileName)
 
                 if(!dir.exists())

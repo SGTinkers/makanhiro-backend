@@ -13,6 +13,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import models.ErrorMsg
+import org.apache.http.HttpStatus
 import routes.*
 import routes.authentication.auth
 import routes.authentication.jwtAuth
@@ -25,6 +26,16 @@ fun main(args: Array<String>) {
 fun startServer() = embeddedServer(Netty, 8080) {
     install(ContentNegotiation) {
         gson { setPrettyPrinting() }
+    }
+
+    install(StatusPages){
+        exception<Throwable> {
+            val status = when (it) {
+                is io.jsonwebtoken.SignatureException -> HttpStatusCode.Unauthorized
+                else -> HttpStatusCode.InternalServerError
+            }
+            call.respond(status,"Not mooning yet ☺")
+        }
     }
 
     val path = "/api/v1"

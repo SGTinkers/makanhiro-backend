@@ -4,15 +4,17 @@ import database.AuthSource
 import io.jsonwebtoken.*
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
 import io.ktor.pipeline.PipelineContext
 import io.ktor.request.header
+import io.ktor.response.respond
 import models.NotCompleted
 import models.NotTested
 import models.User
 import java.util.*
 
 object JwtConfig {
-    private const val secret = "ASDNASKDNASDNASJKDNASKNDJNASNDASJKDNASKDNASDA" //Please change before compiling
+    private const val secret = "onlySadReacts☺" //Please change before compiling
     private const val issuer = "Msociety"
     private const val validityInMs: Long = 36_000_000 //10hrs
 
@@ -20,7 +22,7 @@ object JwtConfig {
             .setSigningKey(secret)
             .parseClaimsJws(token)
             .body
-            .let({ it -> it["id"].toString() })
+            .let({ it["id"].toString() })
 
     fun makeToken(user: User): String = Jwts.builder()
             .setSubject("Authentication")

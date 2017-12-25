@@ -23,6 +23,8 @@ fun Route.postSub(path:String) = route("$path/postSub") {
                     call.respond(res)
                 }catch (e:SQLException){
                     call.respond(HttpStatusCode.BadRequest,"Bad Request")
+                }catch (e:io.jsonwebtoken.SignatureException){
+                    call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized. Nice try ☺")
                 }
             }
         }

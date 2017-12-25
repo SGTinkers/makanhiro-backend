@@ -65,12 +65,13 @@ fun Route.post(path: String) = route("$path/post"){
         when(user){
             null -> call.respond(HttpStatusCode.Unauthorized,"401 Unauthorized")
             else -> {
+
                 val post = call.receive<ValuesMap>()
                 val postId = post["postId"]
                 val res = PostSource().deletePost(postId,user)
                 if(res) call.respond("Delete Success")
                     else call.respond(HttpStatusCode.BadRequest,ErrorMsg("Bad Request", ERROR_DELETING_POST))
-            }
+                }
         }
     }
 }
