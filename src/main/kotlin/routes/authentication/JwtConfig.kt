@@ -12,7 +12,7 @@ import models.User
 import java.util.*
 
 object JwtConfig {
-    private const val secret = "mysupersecretsecretXD" //Please change before compiling
+    private const val secret = "ASDNASKDNASDNASJKDNASKNDJNASNDASJKDNASKDNASDA" //Please change before compiling
     private const val issuer = "Msociety"
     private const val validityInMs: Long = 36_000_000 //10hrs
 

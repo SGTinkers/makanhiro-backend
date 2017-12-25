@@ -35,7 +35,7 @@ fun startServer() = embeddedServer(Netty, 8080) {
 
         static("images") {
             staticRootFolder = File(IMAGES_DIR)
-            files("public")
+            files("images")
         }
 
         post(path)

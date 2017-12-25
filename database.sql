@@ -1,3 +1,24 @@
+create table post
+(
+  id char(64) not null
+    primary key,
+  locationId int not null,
+  expiryTime timestamp not null on update CURRENT_TIMESTAMP,
+  images varchar(4000) null,
+  dietary enum('HALAL', 'VEGETARIAN') null,
+  description varchar(200) null,
+  foodAvailability enum('ABUNDANT', 'FINISHING', 'FINISHED') not null,
+  createdAt timestamp not null,
+  updatedAt timestamp not null,
+  posterId char(64) not null,
+  constraint post_id_uindex
+  unique (id),
+  constraint post_location_location_id_fk
+  foreign key (locationId) references location (locationId)
+)
+  engine=InnoDB
+;
+
 create table location
 (
   locationId int not null
@@ -30,27 +51,6 @@ create index locationsub_user_userId_fk
 
 create index locationId_location_locationId_fk
   on locationsub (locationId)
-;
-
-create table post
-(
-  id char(64) not null
-    primary key,
-  locationId int not null,
-  expiryTime timestamp not null on update CURRENT_TIMESTAMP,
-  images varchar(4000) null,
-  dietary enum('HALAL', 'VEGETARIAN') null,
-  description varchar(200) null,
-  foodAvailability enum('ABUNDANT', 'FINISHING', 'FINISHED') not null,
-  createdAt timestamp not null,
-  updatedAt timestamp not null,
-  posterId char(64) not null,
-  constraint post_id_uindex
-  unique (id),
-  constraint post_location_location_id_fk
-  foreign key (locationId) references location (locationId)
-)
-  engine=InnoDB
 ;
 
 create index post_location_location_id_fk
