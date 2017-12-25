@@ -42,8 +42,8 @@ create table post
   dietary enum('HALAL', 'VEGETARIAN') null,
   description varchar(200) null,
   foodAvailability enum('ABUNDANT', 'FINISHING', 'FINISHED') not null,
-  createdAt timestamp default '0000-00-00 00:00:00' not null,
-  updatedAt timestamp default '0000-00-00 00:00:00' not null,
+  createdAt timestamp not null,
+  updatedAt timestamp not null,
   posterId char(64) not null,
   constraint post_id_uindex
   unique (id),
