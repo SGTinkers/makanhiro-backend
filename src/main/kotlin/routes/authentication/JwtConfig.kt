@@ -36,7 +36,6 @@ object JwtConfig {
 data class JwtObjForFrontEnd(val token: String,
                              val expiry: Date)
 
-@NotTested
 fun PipelineContext<Unit, ApplicationCall>.jwtAuth() {
     val token = call.request.header("Authorization")?.removePrefix("Bearer ") ?: return
     val userId = JwtConfig.parse(token)
@@ -45,17 +44,11 @@ fun PipelineContext<Unit, ApplicationCall>.jwtAuth() {
         call.attributes.put(User.key, user)
 }
 
-@NotTested
+
 fun PipelineContext<*, ApplicationCall>.requireLogin(): User? = try {
     optionalLogin()
 }catch (e:IllegalStateException){
     null
 }
 
-
-
-
 fun PipelineContext<*, ApplicationCall>.optionalLogin(): User? = call.attributes[User.key]
-
-
-class NotLoggedIn(var msg: String) : Exception()

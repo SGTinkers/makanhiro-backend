@@ -29,7 +29,6 @@ fun Route.auth(path: String) = route("$path/auth") {
     }
 }
 
-@TestedNotComprehensive
 fun validateWithFacebook(accessToken: String): String? {
     return try {
         val url = "https://graph.facebook.com/me?" +

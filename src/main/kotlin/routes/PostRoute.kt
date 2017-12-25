@@ -12,8 +12,7 @@ import io.ktor.util.ValuesMap
 import models.*
 import routes.authentication.requireLogin
 
-@NotCompleted
-@NotTested
+
 fun Route.post(path: String) = route("$path/post"){
     get {
         val query = PostQuery.fromParams(call.parameters)
