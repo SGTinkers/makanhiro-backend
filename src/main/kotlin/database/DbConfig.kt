@@ -7,7 +7,7 @@ fun getDbConnection():Connection {
     val jdbcDriver = "com.mysql.cj.jdbc.Driver"
     val dbUrl= "jdbc:mysql://localhost/makanhiro?useLegacyDatetimeCode=false&serverTimezone=UTC"
     val user = "root"
-    val password = "12345"
+    val password = "kek"
 
     try {
         Class.forName(jdbcDriver)

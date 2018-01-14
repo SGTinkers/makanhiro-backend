@@ -34,6 +34,7 @@ fun startServer() = embeddedServer(Netty, 8080) {
                 is io.jsonwebtoken.SignatureException -> HttpStatusCode.Unauthorized
                 else -> HttpStatusCode.InternalServerError
             }
+            it.printStackTrace()
             call.respond(status,"Not mooning yet ☺")
         }
     }

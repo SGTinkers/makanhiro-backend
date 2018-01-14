@@ -83,6 +83,7 @@ class PostSource {
             conn.close()
             rs != 0
         } catch (e: SQLException) {
+            e.printStackTrace()
             false
         }
     }
