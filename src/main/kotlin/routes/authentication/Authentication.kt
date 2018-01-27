@@ -24,12 +24,12 @@ fun Route.auth(path: String) = route("$path/auth") {
         val jwt = fbAcToken?.let { it1 -> validateWithFacebook(it1) }
         when (jwt) {
             null -> call.respond(HttpStatusCode.Unauthorized)
-            else -> call.respond(JwtObjForFrontEnd(jwt, JwtConfig.getExpiration()))
+            else -> call.respond(JwtObjForFrontEnd(jwt[0], jwt[1]))
         }
     }
 }
 
-fun validateWithFacebook(accessToken: String): String? {
+fun validateWithFacebook(accessToken: String): ArrayList<String>? {
     return try {
         val url = "https://graph.facebook.com/me?" +
                 "fields=id,name,email&access_token=$accessToken"
@@ -44,10 +44,22 @@ fun validateWithFacebook(accessToken: String): String? {
         return if (!hasRegistered)
             when (register(tempUser)) {
                 0 -> null
-                else -> AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)
+                else -> {
+                    val arList = ArrayList<String>()
+                    AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)?.let { arList.add(it) }
+                    arList.add(tempUser.id)
+
+                    arList
+                }
             }
-        else
-            AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)
+        else {
+            val arList = ArrayList<String>()
+            AuthSource().getUserByFbId(tempUser.id)?.let(JwtConfig::makeToken)?.let { arList.add(it) }
+            arList.add(tempUser.id)
+
+            arList
+        }
+
 
     } catch (e: IOException) {
         null

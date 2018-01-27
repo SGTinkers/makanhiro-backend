@@ -36,7 +36,8 @@ object JwtConfig {
 }
 
 data class JwtObjForFrontEnd(val token: String,
-                             val expiry: Date)
+                             val userId: String,
+                             val expiry: Date? = null)
 
 fun PipelineContext<Unit, ApplicationCall>.jwtAuth() {
     val token = call.request.header("Authorization")?.removePrefix("Bearer ") ?: return
