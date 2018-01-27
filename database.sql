@@ -3,13 +3,13 @@ create table post
   id char(64) not null
     primary key,
   locationId int not null,
-  expiryTime timestamp not null on update CURRENT_TIMESTAMP,
+  expiryTime timestamp not null,
   images varchar(4000) null,
   dietary enum('HALAL', 'VEGETARIAN') null,
   description varchar(200) null,
   foodAvailability enum('ABUNDANT', 'FINISHING', 'FINISHED') not null,
-  createdAt timestamp not null,
-  updatedAt timestamp not null,
+  createdAt timestamp default now() not null,
+  updatedAt timestamp default now() not null,
   posterId char(64) not null,
   constraint post_id_uindex
   unique (id),
